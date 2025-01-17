@@ -1,17 +1,15 @@
-# SQL Generator 
+# SQL Generator 🎯
 
 This project allows you to generate SQL queries from a simplified syntax. It transforms a simple database description into SQL CREATE TABLE statements.
 
-## Installation and Execution Guide 
+## Installation and Execution Guide 🔧
 
-### For Windows 
+### For Windows 🪟
 
 1. **Required Components Installation:**
-   - Navigate to the `windows_requirement` folder provided with the project
-   - Copy the following folders to `C:\Program Files\Java\`:
-     - `javacc`
-     - `jdk-23`
-     - `jre1.8.0_431`
+   - Download and install Java JDK from [Oracle's official website](https://www.oracle.com/java/technologies/downloads/)
+   - Download JavaCC from [JavaCC's official website](https://javacc.github.io/javacc/)
+   - Extract JavaCC to a directory (e.g., `C:\Program Files\Java\javacc`)
 
 2. **Environment Variables Configuration:**
    1. Open Start menu and search for "environment variables"
@@ -19,11 +17,10 @@ This project allows you to generate SQL queries from a simplified syntax. It tra
    3. In the "System Properties" window, click on "Environment Variables..."
    4. In the "System variables" section, find the "Path" variable
    5. Select "Path" and click "Edit..."
-   6. Click "New" and add the following paths (one by one):
+   6. Click "New" and add the following paths (adjust according to your installation directories):
       ```
-      C:\Program Files\Java\javacc\javacc-7.0.13\scripts
-      C:\Program Files\Java\jdk-23\bin
-      C:\Program Files\Java\jre1.8.0_431\bin
+      C:\Program Files\Java\javacc\bin
+      C:\Program Files\Java\jdk-[version]\bin
       ```
    7. Click "OK" to close each window
 
@@ -46,7 +43,7 @@ This project allows you to generate SQL queries from a simplified syntax. It tra
      build.bat
      ```
 
-### For Linux 
+### For Linux 🐧
 
 1. **Java Installation:**
 ```bash
@@ -77,7 +74,7 @@ chmod +x build.sh
 ./build.sh
 ```
 
-### For macOS 
+### For macOS 🍎
 
 1. **Java and JavaCC Installation:**
 ```bash
@@ -103,7 +100,7 @@ chmod +x build.sh
 ./build.sh
 ```
 
-## Input File Format 
+## Input File Format 📝
 
 To generate SQL queries, you need to edit the `input.txt` file. This file uses a simplified syntax to describe your tables.
 
@@ -128,7 +125,7 @@ table table_name:
   - `now`: For current date and time (CURRENT_TIMESTAMP)
 - `reference: table.column`: Creates a foreign key (FOREIGN KEY)
 
-## Usage Examples 
+## Usage Examples 📚
 
 1. **Simple Example (2 Linked Tables)**
 Copy this content into `input.txt`:
@@ -170,7 +167,7 @@ table comments:
 - comment_date(date, default: now)
 ```
 
-### How to Use 
+### How to Use 📝
 
 1. Edit the `input.txt` file with your table structure
 2. Run the compilation script:
@@ -179,7 +176,7 @@ table comments:
    - On Linux/macOS: `./build.sh`
 3. The program will generate the corresponding SQL queries in the console
 
-### Important Notes 
+### Important Notes 📝
 - Respect indentation with dashes (-) for columns
 - Each table must have at least one column
 - Keywords like `table`, `primary key`, etc. are case-sensitive
