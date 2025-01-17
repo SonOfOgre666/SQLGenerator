@@ -1,0 +1,12 @@
+table utilisateurs:
+- id(entier, clé primaire, auto)
+- nom(texte, requis)
+- email(texte, unique)
+- date_creation(date, par défaut: aujourd'hui)
+
+table articles:
+- id(entier, clé primaire, auto)
+- utilisateur_id(entier, requis, référence: utilisateurs.id)
+- titre(texte, requis)
+- contenu(texte)
+- date_publication(date, par défaut: maintenant)

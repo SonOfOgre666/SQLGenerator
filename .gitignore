@@ -1,0 +1,18 @@
+# Generated Java files
+*.class
+JavaCharStream.java
+ParseException.java
+SimpleCharStream.java
+SQLGeneratorConstants.java
+SQLGeneratorTokenManager.java
+Token.java
+TokenMgrError.java
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# System files
+.DS_Store
+Thumbs.db

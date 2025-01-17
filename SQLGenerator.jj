@@ -1,0 +1,232 @@
+/*
+ * Générateur SQL - Analyseur syntaxique
+ * ====================================
+ * Ce fichier définit la grammaire pour l'analyse et la génération de requêtes SQL
+ */
+
+options {
+  STATIC = false;          // Ne pas générer de méthodes statiques
+  UNICODE_INPUT = true;    // Permettre l'entrée Unicode
+  JAVA_UNICODE_ESCAPE = true;  // Permettre les séquences d'échappement Unicode Java
+}
+
+PARSER_BEGIN(SQLGenerator)
+
+import java.util.*;
+
+public class SQLGenerator {
+    // Structure de données pour stocker les informations des tables
+    private Map<String, Table> tables = new HashMap<>();
+    private String currentTable;
+
+    private static class Table {
+        String name;
+        List<Column> columns = new ArrayList<>();
+        
+        public Table(String name) {
+            this.name = name;
+        }
+    }
+
+    private static class Column {
+        String name;
+        String type;
+        boolean isPrimaryKey = false;
+        boolean isAutoIncrement = false;
+        boolean isRequired = false;
+        boolean isUnique = false;
+        String defaultValue = null;
+        String foreignKeyRef = null;
+
+        public Column(String name, String type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        // Méthode pour générer la définition SQL d'une colonne
+        public String toSQL() {
+            StringBuilder sql = new StringBuilder();
+            sql.append(name).append(" ");
+            
+            // Map types
+            switch(type) {
+                case "entier": sql.append("INT"); break;
+                case "texte": sql.append("VARCHAR(255)"); break;
+                case "date": sql.append("DATE"); break;
+                default: sql.append(type);
+            }
+            
+            if (isAutoIncrement) sql.append(" AUTO_INCREMENT");
+            if (isPrimaryKey) sql.append(" PRIMARY KEY");
+            if (isRequired) sql.append(" NOT NULL");
+            if (isUnique) sql.append(" UNIQUE");
+            
+            if (defaultValue != null) {
+                if (defaultValue.equals("aujourd'hui") || defaultValue.equals("maintenant")) {
+                    sql.append(" DEFAULT CURRENT_TIMESTAMP");
+                } else {
+                    sql.append(" DEFAULT ").append(defaultValue);
+                }
+            }
+            
+            return sql.toString();
+        }
+    }
+
+    // Méthode pour générer la requête SQL de création de tables
+    public String generateSQL() {
+        StringBuilder sql = new StringBuilder();
+        
+        for (Table table : tables.values()) {
+            sql.append("CREATE TABLE ").append(table.name).append(" (\n");
+            
+            List<String> columnDefs = new ArrayList<>();
+            List<String> foreignKeys = new ArrayList<>();
+            
+            for (Column col : table.columns) {
+                columnDefs.add("    " + col.toSQL());
+                
+                if (col.foreignKeyRef != null) {
+                    String[] parts = col.foreignKeyRef.split("\\.");
+                    foreignKeys.add(String.format("    FOREIGN KEY (%s) REFERENCES %s(%s)",
+                        col.name, parts[0], parts[1]));
+                }
+            }
+            
+            columnDefs.addAll(foreignKeys);
+            sql.append(String.join(",\n", columnDefs));
+            sql.append("\n);\n\n");
+        }
+        
+        return sql.toString();
+    }
+
+    public static void main(String[] args) {
+        SQLGenerator parser = new SQLGenerator(System.in);
+        try {
+            parser.Input();
+            System.out.println(parser.generateSQL());
+        } catch (ParseException e) {
+            System.err.println("Syntax error: " + e.getMessage());
+        }
+    }
+}
+
+PARSER_END(SQLGenerator)
+
+// Définition des règles de skipping pour les espaces et les commentaires
+SKIP : {
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | <COMMENT: "#" (~["\n","\r"])*>
+}
+
+// Définition des tokens pour les mots-clés et les symboles
+TOKEN : {
+    <TABLE: "table">
+  | <COLON: ":">
+  | <DASH: "-">
+  | <COMMA: ",">
+  | <LPAREN: "(">
+  | <RPAREN: ")">
+  | <PRIMARY_KEY: "cl\u00e9 primaire">
+  | <AUTO: "auto">
+  | <REQUIRED: "requis">
+  | <UNIQUE: "unique">
+  | <DEFAULT_VALUE: "par d\u00e9faut:">
+  | <REFERENCE: "r\u00e9f\u00e9rence:">
+  | <DOT: ".">
+  | <TODAY: "aujourd'hui">
+  | <NOW: "maintenant">
+  | <IDENTIFIER: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","0"-"9","_"])*>
+}
+
+// Définition de la règle pour l'analyse de l'entrée
+void Input() :
+{}
+{
+    (TableDefinition())*
+    <EOF>
+}
+
+// Définition de la règle pour l'analyse d'une définition de table
+void TableDefinition() :
+{
+    Token t;
+}
+{
+    <TABLE> t=<IDENTIFIER> <COLON>
+    {
+        currentTable = t.image;
+        tables.put(currentTable, new Table(currentTable));
+    }
+    (ColumnDefinition())*
+}
+
+// Définition de la règle pour l'analyse d'une définition de colonne
+void ColumnDefinition() :
+{
+    Token name;
+    String type = null;
+    Column col;
+}
+{
+    <DASH> name=<IDENTIFIER>
+    {
+        col = new Column(name.image, null);
+        tables.get(currentTable).columns.add(col);
+    }
+    [
+        <LPAREN> type=Type() 
+        {
+            col.type = type;
+        }
+        (
+            <COMMA>
+            (
+                <PRIMARY_KEY> { col.isPrimaryKey = true; }
+              | <AUTO> { col.isAutoIncrement = true; }
+              | <REQUIRED> { col.isRequired = true; }
+              | <UNIQUE> { col.isUnique = true; }
+              | <DEFAULT_VALUE> DefaultValue(col)
+              | <REFERENCE> ForeignKeyRef(col)
+            )
+        )*
+        <RPAREN>
+    ]
+}
+
+// Définition de la règle pour l'analyse d'un type
+String Type() :
+{
+    Token t;
+}
+{
+    t=<IDENTIFIER>
+    { return t.image; }
+}
+
+// Définition de la règle pour l'analyse d'une valeur par défaut
+void DefaultValue(Column col) :
+{
+    Token t;
+}
+{
+    (
+        t=<TODAY> { col.defaultValue = "aujourd'hui"; }
+      | t=<NOW> { col.defaultValue = "maintenant"; }
+      | t=<IDENTIFIER> { col.defaultValue = t.image; }
+    )
+}
+
+// Définition de la règle pour l'analyse d'une référence étrangère
+void ForeignKeyRef(Column col) :
+{
+    Token table, column;
+}
+{
+    table=<IDENTIFIER> <DOT> column=<IDENTIFIER>
+    { col.foreignKeyRef = table.image + "." + column.image; }
+}
