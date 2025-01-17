@@ -1,188 +1,188 @@
-# Générateur SQL 🎯
+# SQL Generator 
 
-Ce projet permet de générer des requêtes SQL à partir d'une syntaxe simplifiée. Il transforme une description simple de base de données en instructions SQL CREATE TABLE.
+This project allows you to generate SQL queries from a simplified syntax. It transforms a simple database description into SQL CREATE TABLE statements.
 
-## Guide d'Installation et d'Exécution 🔧
+## Installation and Execution Guide 
 
-### Pour Windows 🪟
+### For Windows 
 
-1. **Installation des composants requis :**
-   - Naviguez vers le dossier `windows_requirement` fourni avec le projet
-   - Copiez les dossiers suivants vers `C:\Program Files\Java\` :
+1. **Required Components Installation:**
+   - Navigate to the `windows_requirement` folder provided with the project
+   - Copy the following folders to `C:\Program Files\Java\`:
      - `javacc`
      - `jdk-23`
      - `jre1.8.0_431`
 
-2. **Configuration des variables d'environnement :**
-   1. Ouvrez le menu Démarrer et recherchez "variables d'environnement"
-   2. Cliquez sur "Modifier les variables d'environnement système"
-   3. Dans la fenêtre "Propriétés système", cliquez sur "Variables d'environnement..."
-   4. Dans la section "Variables système", trouvez la variable "Path"
-   5. Sélectionnez "Path" et cliquez sur "Modifier..."
-   6. Cliquez sur "Nouveau" et ajoutez les chemins suivants (un par un) :
+2. **Environment Variables Configuration:**
+   1. Open Start menu and search for "environment variables"
+   2. Click on "Edit the system environment variables"
+   3. In the "System Properties" window, click on "Environment Variables..."
+   4. In the "System variables" section, find the "Path" variable
+   5. Select "Path" and click "Edit..."
+   6. Click "New" and add the following paths (one by one):
       ```
       C:\Program Files\Java\javacc\javacc-7.0.13\scripts
       C:\Program Files\Java\jdk-23\bin
       C:\Program Files\Java\jre1.8.0_431\bin
       ```
-   7. Cliquez sur "OK" pour fermer chaque fenêtre
+   7. Click "OK" to close each window
 
-3. **Vérification de l'installation :**
-   - Ouvrez une nouvelle invite de commande (cmd) et tapez :
+3. **Installation Verification:**
+   - Open a new command prompt (cmd) and type:
      ```batch
      java -version
      javac -version
      javacc -version
      ```
-   - Si les commandes affichent les versions sans erreur, l'installation est réussie
+   - If the commands display versions without errors, the installation is successful
 
-4. **Exécution du projet :**
-   - Si vous utilisez PowerShell :
+4. **Project Execution:**
+   - If using PowerShell:
      ```powershell
      ./build.bat
      ```
-   - Si vous utilisez l'invite de commande (cmd) :
+   - If using Command Prompt (cmd):
      ```batch
      build.bat
      ```
 
-### Pour Linux 🐧
+### For Linux 
 
-1. **Installation de Java :**
+1. **Java Installation:**
 ```bash
-# Pour Ubuntu/Debian
+# For Ubuntu/Debian
 sudo apt update
 sudo apt install default-jdk
 
-# Vérifiez l'installation
+# Verify installation
 java -version
 javac -version
 ```
 
-2. **Installation de JavaCC :**
+2. **JavaCC Installation:**
 ```bash
-# Pour Ubuntu/Debian
+# For Ubuntu/Debian
 sudo apt install javacc
 
-# Vérifiez l'installation
+# Verify installation
 javacc -version
 ```
 
-3. **Préparation et exécution du projet :**
+3. **Project Preparation and Execution:**
 ```bash
-# Rendez le script de compilation exécutable
+# Make the build script executable
 chmod +x build.sh
 
-# Compilation et exécution
+# Compile and run
 ./build.sh
 ```
 
-### Pour macOS 🍎
+### For macOS 
 
-1. **Installation de Java et JavaCC :**
+1. **Java and JavaCC Installation:**
 ```bash
-# Installez Homebrew si ce n'est pas déjà fait
+# Install Homebrew if not already installed
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Installez Java et JavaCC
+# Install Java and JavaCC
 brew install openjdk
 brew install javacc
 
-# Vérifiez l'installation
+# Verify installation
 java -version
 javac -version
 javacc -version
 ```
 
-2. **Préparation et exécution du projet :**
+2. **Project Preparation and Execution:**
 ```bash
-# Rendez le script de compilation exécutable
+# Make the build script executable
 chmod +x build.sh
 
-# Compilation et exécution
+# Compile and run
 ./build.sh
 ```
 
-## Format du Fichier d'Entrée 📝
+## Input File Format 
 
-Pour générer vos requêtes SQL, vous devez éditer le fichier `input.txt`. Ce fichier utilise une syntaxe simplifiée pour décrire vos tables.
+To generate SQL queries, you need to edit the `input.txt` file. This file uses a simplified syntax to describe your tables.
 
-### Syntaxe de Base
+### Basic Syntax
 ```
-table nom_table:
-- nom_colonne(type, contrainte1, contrainte2, ...)
-```
-
-### Types Disponibles
-- `entier` : Pour les nombres entiers (INT en SQL)
-- `texte` : Pour les chaînes de caractères (VARCHAR(255) en SQL)
-- `date` : Pour les dates (DATE en SQL)
-
-### Contraintes Disponibles
-- `clé primaire` : Définit la clé primaire de la table (PRIMARY KEY)
-- `auto` : Auto-incrémentation pour les entiers (AUTO_INCREMENT)
-- `requis` : Champ obligatoire (NOT NULL)
-- `unique` : Valeur unique (UNIQUE)
-- `par défaut: valeur` : Définit une valeur par défaut
-  - `aujourd'hui` : Pour la date du jour (CURRENT_DATE)
-  - `maintenant` : Pour la date et l'heure actuelles (CURRENT_TIMESTAMP)
-- `référence: table.colonne` : Crée une clé étrangère (FOREIGN KEY)
-
-## Exemples d'Utilisation 💡
-
-1. **Exemple Simple (2 Tables Liées)**
-Copiez ce contenu dans `input.txt` :
-```
-table etudiants:
-- id(entier, clé primaire, auto)
-- nom(texte, requis)
-- email(texte, unique)
-- date_inscription(date, par défaut: aujourd'hui)
-
-table notes:
-- id(entier, clé primaire, auto)
-- etudiant_id(entier, requis, référence: etudiants.id)
-- matiere(texte, requis)
-- note(entier, requis)
-- date_exam(date, par défaut: aujourd'hui)
+table table_name:
+- column_name(type, constraint1, constraint2, ...)
 ```
 
-2. **Exemple Complexe (Système de Blog)**
+### Available Types
+- `integer`: For integer numbers (SQL INT)
+- `text`: For character strings (SQL VARCHAR(255))
+- `date`: For dates (SQL DATE)
+
+### Available Constraints
+- `primary key`: Defines the table's primary key (PRIMARY KEY)
+- `auto`: Auto-increment for integers (AUTO_INCREMENT)
+- `required`: Required field (NOT NULL)
+- `unique`: Unique value (UNIQUE)
+- `default: value`: Sets a default value
+  - `today`: For current date (CURRENT_DATE)
+  - `now`: For current date and time (CURRENT_TIMESTAMP)
+- `reference: table.column`: Creates a foreign key (FOREIGN KEY)
+
+## Usage Examples 
+
+1. **Simple Example (2 Linked Tables)**
+Copy this content into `input.txt`:
 ```
-table utilisateurs:
-- id(entier, clé primaire, auto)
-- username(texte, requis, unique)
-- email(texte, requis, unique)
-- date_creation(date, par défaut: maintenant)
+table students:
+- id(integer, primary key, auto)
+- name(text, required)
+- email(text, unique)
+- registration_date(date, default: today)
+
+table grades:
+- id(integer, primary key, auto)
+- student_id(integer, required, reference: students.id)
+- subject(text, required)
+- grade(integer, required)
+- exam_date(date, default: today)
+```
+
+2. **Complex Example (Blog System)**
+```
+table users:
+- id(integer, primary key, auto)
+- username(text, required, unique)
+- email(text, required, unique)
+- creation_date(date, default: now)
 
 table articles:
-- id(entier, clé primaire, auto)
-- auteur_id(entier, requis, référence: utilisateurs.id)
-- titre(texte, requis)
-- contenu(texte, requis)
-- date_publication(date, par défaut: maintenant)
+- id(integer, primary key, auto)
+- author_id(integer, required, reference: users.id)
+- title(text, required)
+- content(text, required)
+- publication_date(date, default: now)
 
-table commentaires:
-- id(entier, clé primaire, auto)
-- article_id(entier, requis, référence: articles.id)
-- utilisateur_id(entier, requis, référence: utilisateurs.id)
-- contenu(texte, requis)
-- date_commentaire(date, par défaut: maintenant)
+table comments:
+- id(integer, primary key, auto)
+- article_id(integer, required, reference: articles.id)
+- user_id(integer, required, reference: users.id)
+- content(text, required)
+- comment_date(date, default: now)
 ```
 
-### Comment Utiliser 🔄
+### How to Use 
 
-1. Éditez le fichier `input.txt` avec votre structure de tables
-2. Exécutez le script de compilation :
-   - Sous Windows (PowerShell) : `./build.bat`
-   - Sous Windows (CMD) : `build.bat`
-   - Sous Linux/macOS : `./build.sh`
-3. Le programme générera les requêtes SQL correspondantes dans la console
+1. Edit the `input.txt` file with your table structure
+2. Run the compilation script:
+   - On Windows (PowerShell): `./build.bat`
+   - On Windows (CMD): `build.bat`
+   - On Linux/macOS: `./build.sh`
+3. The program will generate the corresponding SQL queries in the console
 
-### Notes Importantes ⚠️
-- Respectez l'indentation avec des tirets (-) pour les colonnes
-- Chaque table doit avoir au moins une colonne
-- Les mots-clés comme `table`, `clé primaire`, etc. sont sensibles aux accents
-- Pour une nouvelle génération SQL, modifiez simplement `input.txt` et relancez le script
-- Les commentaires dans `input.txt` commencent par `#`
-- Le programme nettoie automatiquement les fichiers générés après l'exécution
+### Important Notes 
+- Respect indentation with dashes (-) for columns
+- Each table must have at least one column
+- Keywords like `table`, `primary key`, etc. are case-sensitive
+- To generate new SQL, simply modify `input.txt` and run the script again
+- Comments in `input.txt` start with `#`
+- The program automatically cleans up generated files after execution

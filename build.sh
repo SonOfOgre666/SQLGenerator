@@ -1,24 +1,24 @@
 #!/bin/bash
 
-# Script de construction pour Linux/Unix
+# Linux/Unix build script
 # ====================================
 
-echo "Compilation du projet..."
+echo "Building project..."
 
-# Génération des fichiers Java avec JavaCC
+# Generate Java files with JavaCC
 javacc SQLGenerator.jj
 
-# Compilation des fichiers Java générés
+# Compile generated Java files
 javac *.java
 
-# Exécution du programme avec le fichier de test
-echo "Test avec le fichier d'entrée test_input.txt :"
+# Run the program with test file
+echo "Test with input.txt file:"
 echo "----------------------------------------"
 echo "----------------------------------------"
 echo "----------------------------------------"
 java -Dfile.encoding=UTF-8 SQLGenerator < input.txt
 
-# Nettoyage des fichiers temporaires générés
-echo "Nettoyage des fichiers générés..."
+# Clean up generated temporary files
+echo "Cleaning up generated files..."
 rm -f *.class
 rm -f Token*.java Parser*.java Simple*.java SQLGenerator*.java JavaCharStream.java ParseException.java

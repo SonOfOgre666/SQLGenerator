@@ -1,13 +1,13 @@
 /*
- * Générateur SQL - Analyseur syntaxique
+ * SQL Generator - Syntax Parser
  * ====================================
- * Ce fichier définit la grammaire pour l'analyse et la génération de requêtes SQL
+ * This file defines the grammar for SQL query analysis and generation
  */
 
 options {
-  STATIC = false;          // Ne pas générer de méthodes statiques
-  UNICODE_INPUT = true;    // Permettre l'entrée Unicode
-  JAVA_UNICODE_ESCAPE = true;  // Permettre les séquences d'échappement Unicode Java
+  STATIC = false;          // Do not generate static methods
+  UNICODE_INPUT = true;    // Allow Unicode input
+  JAVA_UNICODE_ESCAPE = true;  // Allow Java Unicode escape sequences
 }
 
 PARSER_BEGIN(SQLGenerator)
@@ -15,7 +15,7 @@ PARSER_BEGIN(SQLGenerator)
 import java.util.*;
 
 public class SQLGenerator {
-    // Structure de données pour stocker les informations des tables
+    // Data structure to store table information
     private Map<String, Table> tables = new HashMap<>();
     private String currentTable;
 
@@ -43,7 +43,7 @@ public class SQLGenerator {
             this.type = type;
         }
 
-        // Méthode pour générer la définition SQL d'une colonne
+        // Method to generate SQL column definition
         public String toSQL() {
             StringBuilder sql = new StringBuilder();
             sql.append(name).append(" ");
@@ -73,7 +73,7 @@ public class SQLGenerator {
         }
     }
 
-    // Méthode pour générer la requête SQL de création de tables
+    // Method to generate SQL table creation query
     public String generateSQL() {
         StringBuilder sql = new StringBuilder();
         
@@ -114,7 +114,7 @@ public class SQLGenerator {
 
 PARSER_END(SQLGenerator)
 
-// Définition des règles de skipping pour les espaces et les commentaires
+// Skipping rules for spaces and comments
 SKIP : {
     " "
   | "\t"
@@ -123,7 +123,7 @@ SKIP : {
   | <COMMENT: "#" (~["\n","\r"])*>
 }
 
-// Définition des tokens pour les mots-clés et les symboles
+// Token definitions for keywords and symbols
 TOKEN : {
     <TABLE: "table">
   | <COLON: ":">
@@ -131,19 +131,19 @@ TOKEN : {
   | <COMMA: ",">
   | <LPAREN: "(">
   | <RPAREN: ")">
-  | <PRIMARY_KEY: "cl\u00e9 primaire">
+  | <PRIMARY_KEY: "primary key">
   | <AUTO: "auto">
-  | <REQUIRED: "requis">
+  | <REQUIRED: "required">
   | <UNIQUE: "unique">
-  | <DEFAULT_VALUE: "par d\u00e9faut:">
-  | <REFERENCE: "r\u00e9f\u00e9rence:">
+  | <DEFAULT_VALUE: "default value:">
+  | <REFERENCE: "reference:">
   | <DOT: ".">
-  | <TODAY: "aujourd'hui">
-  | <NOW: "maintenant">
+  | <TODAY: "today">
+  | <NOW: "now">
   | <IDENTIFIER: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","0"-"9","_"])*>
 }
 
-// Définition de la règle pour l'analyse de l'entrée
+// Input parsing rule
 void Input() :
 {}
 {
@@ -151,7 +151,7 @@ void Input() :
     <EOF>
 }
 
-// Définition de la règle pour l'analyse d'une définition de table
+// Table definition parsing rule
 void TableDefinition() :
 {
     Token t;
@@ -165,7 +165,7 @@ void TableDefinition() :
     (ColumnDefinition())*
 }
 
-// Définition de la règle pour l'analyse d'une définition de colonne
+// Column definition parsing rule
 void ColumnDefinition() :
 {
     Token name;
@@ -198,7 +198,7 @@ void ColumnDefinition() :
     ]
 }
 
-// Définition de la règle pour l'analyse d'un type
+// Type parsing rule
 String Type() :
 {
     Token t;
@@ -208,20 +208,20 @@ String Type() :
     { return t.image; }
 }
 
-// Définition de la règle pour l'analyse d'une valeur par défaut
+// Default value parsing rule
 void DefaultValue(Column col) :
 {
     Token t;
 }
 {
     (
-        t=<TODAY> { col.defaultValue = "aujourd'hui"; }
-      | t=<NOW> { col.defaultValue = "maintenant"; }
+        t=<TODAY> { col.defaultValue = "today"; }
+      | t=<NOW> { col.defaultValue = "now"; }
       | t=<IDENTIFIER> { col.defaultValue = t.image; }
     )
 }
 
-// Définition de la règle pour l'analyse d'une référence étrangère
+// Foreign key reference parsing rule
 void ForeignKeyRef(Column col) :
 {
     Token table, column;
