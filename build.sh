@@ -16,7 +16,7 @@ echo "Test with input.txt file:"
 echo "----------------------------------------"
 echo "----------------------------------------"
 echo "----------------------------------------"
-java -Dfile.encoding=UTF-8 SQLGenerator < input.txt
+java SQLGenerator < input.txt
 
 # Clean up generated temporary files
 echo "Cleaning up generated files..."
