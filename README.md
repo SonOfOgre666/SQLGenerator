@@ -19,7 +19,7 @@ This project allows you to generate SQL queries from a simplified syntax. It tra
    5. Select "Path" and click "Edit..."
    6. Click "New" and add the following paths (adjust according to your installation directories):
       ```
-      C:\Program Files\Java\javacc\bin
+      C:\Program Files\Java\javacc\scripts
       C:\Program Files\Java\jdk-[version]\bin
       ```
    7. Click "OK" to close each window
